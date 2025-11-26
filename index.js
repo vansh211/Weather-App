@@ -7,7 +7,6 @@ const searchForm = document.querySelector("[data-searchForm]");
 const loadingScreen = document.querySelector(".loading-container");
 const userInfoContainer = document.querySelector(".user-info-container");
 
-//initially vairables need????
 
 let oldTab = userTab;
 const API_KEY = "d1845658f92b31c64bd94f06f7188c9c";
@@ -154,17 +153,26 @@ async function fetchSearchWeatherInfo(city) {
     loadingScreen.classList.add("active");
     userInfoContainer.classList.remove("active");
     grantAccessContainer.classList.remove("active");
+    document.querySelector(".error-container").classList.remove("active");
 
     try {
         const response = await fetch(
             `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
-          );
+        );
+
         const data = await response.json();
         loadingScreen.classList.remove("active");
+
+        if (data.cod == "404") {
+            document.querySelector(".error-container").classList.add("active");
+            return;
+        }
+
         userInfoContainer.classList.add("active");
         renderWeatherInfo(data);
-    }
-    catch(err) {
-        //hW
+
+    } catch (err) {
+        loadingScreen.classList.remove("active");
+        document.querySelector(".error-container").classList.add("active");
     }
 }
